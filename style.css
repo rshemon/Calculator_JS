@@ -1,0 +1,42 @@
+.buttonContainer{
+  width:500px;
+  height:600px;
+}
+
+.numDisplay{
+  width:500px;
+  height:100px;
+  background-color:black;
+  margin-bottom:5px;
+  text-align:right;
+}
+
+.numDisplay p.bottom{
+  font-size:40px;
+  font-weight:bold;
+  color:white;
+  margin: 0;
+  left:95%
+}
+
+.numDisplay p.top{
+  padding-top:5px;
+  margin-right:5px;
+  text-align:right;
+  font-size:18px;
+  color:grey;
+}
+
+button{
+  width:121px;
+  height:70px;
+  font-size:20px;
+  margin-bottom:5px;
+  border-style:none;
+  background-color: #CEDFD9;
+  outline:none;
+}
+
+button:hover{
+  background-color:#E1F3EC;
+}

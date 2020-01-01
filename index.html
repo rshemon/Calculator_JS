@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Calculator</h1>
+
+<br><br>
+
+
+<div class="numDisplay">
+  <p class="top">0</p>
+  <p class="bottom">0</p>
+</div>
+
+<div class="buttonContainer">
+  <button id="C">C</button>
+  <button id="DEL">DEL</button>
+  <button id="oneOver">1/x</button>
+  <button id="div">÷</button>
+  <button id="7">7</button>
+  <button id="8">8</button>
+  <button id="9">9</button>
+  <button id="multi">x</button>
+  <button id="4">4</button>
+  <button id="5">5</button>
+  <button id="6">6</button>
+  <button id="sub">-</button>
+  <button id="1">1</button>
+  <button id="2">2</button>
+  <button id="3">3</button>
+  <button id="add">+</button>
+  <button id="plusminus">±</button>
+  <button id="decimal">.</button>
+  <button id="0">0</button>
+  <button id="equals">=</button>
+</div>
+
+
+  <script>
+
+    //this is the function to call to perform an operations
+    //takes two numbers and the operation sign. returns the opreation on the two numbers.
+    function operator (num1, num2, oper){
+      if (oper === "+") {
+        return add(num1, num2);
+      } else if (oper === "-"){
+        return subtract(num1, num2);
+      } else if (oper ==='x') {
+        return multiply(num1, num2);
+      } else if (oper === '÷') {
+        return divide(num1, num2);
+      }
+    }
+
+    //addition function
+    function add (num1, num2) {
+    	return (num1 + num2);
+    }
+
+    //subtract function
+    function subtract (num1, num2) {
+    	return (num1 - num2);
+    }
+
+    //multiply function
+    function multiply (num1, num2){
+      return(num1 * num2);
+    }
+
+    //divide function!
+    function divide (num1, num2){
+      return(num1 / num2);
+    }
+
+    //clear bottom display
+    function clearBottomDisplay(){
+      display.textContent = 0;
+    }
+
+    //clear the top display
+    function clearTopDisplay(){
+      displayTop.textContent = 0;
+    }
+
+    //clear operator
+    function clearOperator(){
+      oper='';
+    }
+
+    //performs the final operation between two values
+    function equalSign(){
+      if (num1 != 0) { //this makes sure only run a calculation when we have values entered!
+        num2 = Number(display.textContent);
+        display.textContent = operator(num1, num2, oper);
+        displayTop.textContent += " " + num2 + " =";
+        clearOperator();
+        num1 = 0;
+        resetAfterEqual = true; //next value now pressed will not append to the calculated answer
+      }
+    }
+
+    //clears all displays and values
+    function clearAll(){
+      num1=0;
+      num2=0;
+      clearOperator;
+      clearBottomDisplay();
+      clearTopDisplay();
+    }
+
+    //removes last character in main display
+    function backSpace(){
+      display.textContent = display.textContent.slice(0,-1);
+    }
+
+    //converts current value to nagative
+    function plusMinus(){
+      display.textContent = Number(display.textContent) * -1;
+    }
+
+    //inverse of current value
+    function oneOver(){
+      display.textContent = Number(1 / display.textContent);
+    }
+
+    //this function is called when keyboard buttons are pressed
+    //checks value of key pressed.
+    //Made special cases for enter, division and multiplication as keyboard values are different than calculator text values (eg, x on calculator = * on keyboard)
+    function checkPress(e) {
+      if (e.key === "Enter") {
+        updateDisplay("=");
+      } else if (e.key === "*") {
+        updateDisplay("x");
+      } else if (e.key === "/") {
+        updateDisplay("÷");
+      } else {
+        updateDisplay(e.key);
+      }
+    }
+
+    //gets the pressed value and sends to updateDisplay function
+    function getValue(e) {
+      var buttPress = e.target.innerText;
+      updateDisplay(buttPress);
+    }
+
+    //This is the main function which checks what button was pressed and runs functions accordingly
+    //Takes in pressed key string value from getValue function
+    function updateDisplay(press){
+      if (Number.isInteger(parseInt(press)) && press!= "1/x") { //condition where number was pressed
+        if (resetAfterEqual == true) { //this part checks if need to reset values after calculating something first so we don't concatenate new digit inputs into a previous calculated value
+          display.textContent = 0;
+          resetAfterEqual = false;
+        }
+        if (press != 0) {
+          display.textContent += press;
+          display.textContent = Number(display.textContent);
+        } else { //special rules for inputting 0, as when we convert to number, end values of decimals would not get displayed properly. (ie, 1.00 would just display 1)
+          display.textContent += press;
+        }
+      } else if (press === '.' && !display.textContent.includes('.')) { //condition for press decimal
+        display.textContent += press;
+      } else if (opArray.includes(press)) { //condition for press operator
+          if (num1 === 0){
+            num1 = Number(display.textContent);
+            displayTop.textContent = num1 + " " + press + " "; //update top display to keep track of all entered operations
+            clearBottomDisplay();
+            oper = press;
+          } else {
+            displayTop.textContent += display.textContent + " " + press + " ";
+            var currentNum = Number(display.textContent);
+            num1 = operator(num1, currentNum, oper);
+            oper = press;
+            clearBottomDisplay();
+          }
+      } else if (press === "=") {
+          equalSign();
+      } else if (press === "C") {
+        clearAll();
+      } else if(press === "DEL") {
+        backSpace();
+      } else if (press === "±") {
+        plusMinus();
+      } else if (press === "1/x") {
+        oneOver();
+      }
+    }
+
+
+    buttons = document.querySelectorAll('button'); //get all buttons
+    for(var button of buttons){ //add click event listener to all buttons
+      button.addEventListener('mousedown', getValue)
+    }
+
+    var num1 = 0; //first  number to be used for calculation
+    var num2 = 0; //second number to be used for calculation
+    var resetAfterEqual = false; //determines whether values need to be reset after calculation
+    var displayValue = 0; //primary display value
+    var displayTopVal = 0; //top display value for calculations
+    var opArray = ['+', '-', '÷', 'x']; //array of mathematical operators
+    var oper; //operator to be used
+    const display = document.querySelector('div.numDisplay > p.bottom') //primary value display
+    const displayTop = document.querySelector('div.numDisplay > p.top') //secondary value display
+    window.addEventListener('keypress', checkPress); //event listener for keyboard press
+
+  </script>
+</body>
+</html>
